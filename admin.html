@@ -1171,11 +1171,19 @@ function editProduct(id) {
   goTo('products', document.querySelector('.nav-item[onclick*=products]'));
 }
 
+function convertDriveUrl(url) {
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+  return url;
+}
+
 function previewImageUrl(url) {
   const area = document.getElementById('imgPreviewArea');
   const img = document.getElementById('imgPreview');
   if (url) {
-    img.src = url;
+    const converted = convertDriveUrl(url);
+    document.getElementById('productImageUrl').value = converted;
+    img.src = converted;
     area.style.display = 'block';
   } else {
     area.style.display = 'none';
