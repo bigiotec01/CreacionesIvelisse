@@ -1261,6 +1261,11 @@
   <p>© 2025 Creacciones Ivelisse. Hecho con ❤️ · <a href="admin.html">Panel de administración</a></p>
 </footer>
 
+<!-- IMAGE ZOOM MODAL -->
+<div id="imageZoomModal" onclick="closeImageZoom()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;cursor:zoom-out;display:none;align-items:center;justify-content:center">
+  <img id="imageZoomImg" src="" style="max-width:92vw;max-height:92vh;border-radius:12px;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,0.5)">
+</div>
+
 <!-- FIREBASE SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -1389,7 +1394,7 @@ function renderProducts(products) {
     <div class="product-card">
       <div class="product-img-wrap">
         ${p.imageUrl
-          ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy">`
+          ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy" style="cursor:zoom-in" onclick="openImageZoom('${p.imageUrl}')">`
           : `<div class="product-no-img">${p.emoji || '📦'}</div>`
         }
         ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
@@ -1623,6 +1628,16 @@ function showToast(msg, type = '') {
   toast.textContent = msg;
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
+}
+
+function openImageZoom(url) {
+  const modal = document.getElementById('imageZoomModal');
+  document.getElementById('imageZoomImg').src = url;
+  modal.style.display = 'flex';
+}
+
+function closeImageZoom() {
+  document.getElementById('imageZoomModal').style.display = 'none';
 }
 </script>
 </body>
