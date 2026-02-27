@@ -900,16 +900,12 @@
       <input type="hidden" id="editProductId">
 
       <div class="form-group">
-        <label>Imagen del producto</label>
-        <div class="img-upload" id="imgUploadArea" onclick="document.getElementById('imgFileInput').click()">
-          <div id="imgUploadContent">
-            <div style="font-size:2rem">📸</div>
-            <div class="upload-hint">Click para subir imagen</div>
-            <div class="upload-hint">PNG, JPG — máx 2MB</div>
-          </div>
+        <label>Link de imagen (URL)</label>
+        <input type="text" id="productImageUrl" placeholder="https://..." oninput="previewImageUrl(this.value)" style="margin-bottom:8px">
+        <div id="imgPreviewArea" style="display:none;margin-top:8px">
+          <img id="imgPreview" src="" alt="preview" style="max-width:100%;max-height:160px;border-radius:8px;object-fit:cover">
         </div>
-        <input type="file" id="imgFileInput" accept="image/*" style="display:none" onchange="previewImage(event)">
-        <input type="hidden" id="productImageUrl">
+        <div style="font-size:0.78rem;color:var(--mid);margin-top:4px">Sube la foto a Google Drive, Imgur o similar y pega el link aquí</div>
       </div>
 
       <div class="form-row">
@@ -1162,14 +1158,7 @@ function openProductModal(product = null) {
   imgUploadFile = null;
 
   // Image preview
-  const uploadArea = document.getElementById('imgUploadArea');
-  if (product?.imageUrl) {
-    uploadArea.innerHTML = `<img src="${product.imageUrl}" alt="preview">`;
-    uploadArea.classList.add('has-image');
-  } else {
-    uploadArea.innerHTML = `<div id="imgUploadContent"><div style="font-size:2rem">📸</div><div class="upload-hint">Click para subir imagen</div><div class="upload-hint">PNG, JPG — máx 2MB</div></div>`;
-    uploadArea.classList.remove('has-image');
-  }
+  previewImageUrl(product?.imageUrl || '');
 }
 
 function closeProductModal() {
@@ -1180,6 +1169,17 @@ function editProduct(id) {
   const p = allProducts.find(x => x.id === id);
   if (p) openProductModal(p);
   goTo('products', document.querySelector('.nav-item[onclick*=products]'));
+}
+
+function previewImageUrl(url) {
+  const area = document.getElementById('imgPreviewArea');
+  const img = document.getElementById('imgPreview');
+  if (url) {
+    img.src = url;
+    area.style.display = 'block';
+  } else {
+    area.style.display = 'none';
+  }
 }
 
 function previewImage(event) {
@@ -1204,18 +1204,7 @@ async function saveProduct() {
     return;
   }
 
-  let imageUrl = document.getElementById('productImageUrl').value;
-
-  // Upload image if selected
-  if (imgUploadFile) {
-    try {
-      const ref = storage.ref(`products/${Date.now()}_${imgUploadFile.name}`);
-      await ref.put(imgUploadFile);
-      imageUrl = await ref.getDownloadURL();
-    } catch (err) {
-      showToast('Error subiendo imagen. Continuando sin imagen.', 'error');
-    }
-  }
+  let imageUrl = document.getElementById('productImageUrl').value.trim();
 
   const data = {
     name,
